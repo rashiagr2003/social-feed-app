@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "268493084964",
+    "project_id": "social-feed-app-8093e",
+    "storage_bucket": "social-feed-app-8093e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:268493084964:android:e6b3ff6c4c3043bf783bb1",
+        "android_client_info": {
+          "package_name": "com.example.social_feed_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "268493084964-m02ta2sppl7ionkadci3ln1t383l96v0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.social_feed_app",
+            "certificate_hash": "5af0ff7f14adffd57e999e34fb65cc039a3c16ea"
+          }
+        },
+        {
+          "client_id": "268493084964-ctcspnedg28jr5pmbd6ko0ff8nptcela.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj8Uq4ZK27G5eKXwtvGK4vVi_WeMAuhj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "268493084964-ctcspnedg28jr5pmbd6ko0ff8nptcela.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
