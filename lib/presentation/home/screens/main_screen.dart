@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../constants/app_colors.dart';
+import '../../../utils/responsive_utils.dart';
 import '../../posts/screens/feed_screen.dart';
 import '../../posts/screens/post_screen.dart';
 import '../../profile/profile_screen.dart';
 
-/// Main screen with bottom navigation
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
@@ -16,15 +16,34 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const FeedScreen(),
-    const ExploreScreen(),
-    const NotificationsScreen(),
-    const ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = const [
+      FeedScreen(),
+      ExploreScreen(),
+      NotificationsScreen(),
+      ProfileScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final fabSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 56.0,
+      tablet: 64.0,
+      desktop: 72.0,
+    );
+    final fabIconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 24.0,
+      tablet: 28.0,
+      desktop: 32.0,
+    );
+
     return Scaffold(
       appBar: null,
       body: IndexedStack(index: _currentIndex, children: _screens),
@@ -36,7 +55,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 );
               },
               backgroundColor: AppColors.primary,
-              child: const Icon(Icons.add, color: Colors.white),
+              child: Icon(Icons.add, color: Colors.white, size: fabIconSize),
             )
           : null,
       bottomNavigationBar: BottomNavigationBar(
@@ -79,6 +98,15 @@ class ExploreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 80.0,
+      tablet: 100.0,
+      desktop: 120.0,
+    );
+    final fontTitle = ResponsiveUtils.fontSize(context, 24);
+    final fontSubtitle = ResponsiveUtils.fontSize(context, 16);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explore'),
@@ -88,20 +116,23 @@ class ExploreScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.explore, size: 80, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            Icon(Icons.explore, size: iconSize, color: AppColors.textSecondary),
+            SizedBox(height: ResponsiveUtils.screenHeight(context) * 0.02),
             Text(
               'Explore',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: fontTitle,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Coming soon!',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: fontSubtitle,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -115,6 +146,15 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 80.0,
+      tablet: 100.0,
+      desktop: 120.0,
+    );
+    final fontTitle = ResponsiveUtils.fontSize(context, 24);
+    final fontSubtitle = ResponsiveUtils.fontSize(context, 16);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
@@ -124,20 +164,27 @@ class NotificationsScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.notifications, size: 80, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            Icon(
+              Icons.notifications,
+              size: iconSize,
+              color: AppColors.textSecondary,
+            ),
+            SizedBox(height: ResponsiveUtils.screenHeight(context) * 0.02),
             Text(
               'Notifications',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: fontTitle,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Coming soon!',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: fontSubtitle,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),

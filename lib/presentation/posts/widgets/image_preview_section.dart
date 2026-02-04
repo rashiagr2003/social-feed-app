@@ -1,11 +1,10 @@
-// Image Preview Section Widget
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-
+import 'package:social_feed_app/utils/responsive_utils.dart';
 import '../../../constants/app_colors.dart';
 import 'create_post_postbar.dart';
 
+// ================= Image Preview Section =================
 class ImagePreviewSection extends StatelessWidget {
   final List<File> images;
   final Function(int) onRemove;
@@ -18,9 +17,30 @@ class ImagePreviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = images.length == 1
+        ? ResponsiveUtils.responsiveValue<double>(
+            context,
+            mobile: 300,
+            tablet: 400,
+            desktop: 500,
+          )
+        : ResponsiveUtils.responsiveValue<double>(
+            context,
+            mobile: 200,
+            tablet: 250,
+            desktop: 300,
+          );
+
     return Container(
-      height: images.length == 1 ? 300 : 200,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: height,
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.responsiveValue<double>(
+          context,
+          mobile: 16,
+          tablet: 24,
+          desktop: 32,
+        ),
+      ),
       child: images.length == 1
           ? SingleImagePreview(image: images[0], onRemove: () => onRemove(0))
           : MultipleImagesPreview(images: images, onRemove: onRemove),
@@ -41,12 +61,19 @@ class SingleImagePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 12,
+      tablet: 16,
+      desktop: 20,
+    );
+
     return Stack(
       children: [
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(color: Colors.grey.shade300),
             image: DecorationImage(image: FileImage(image), fit: BoxFit.cover),
           ),
@@ -70,6 +97,19 @@ class MultipleImagesPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 150,
+      tablet: 200,
+      desktop: 250,
+    );
+    final borderRadius = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 12,
+      tablet: 16,
+      desktop: 20,
+    );
+
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: images.length,
@@ -78,9 +118,9 @@ class MultipleImagesPreview extends StatelessWidget {
           children: [
             Container(
               margin: const EdgeInsets.only(right: 8),
-              width: 150,
+              width: width,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(borderRadius),
                 border: Border.all(color: Colors.grey.shade300),
                 image: DecorationImage(
                   image: FileImage(images[index]),
@@ -104,6 +144,7 @@ class MultipleImagesPreview extends StatelessWidget {
   }
 }
 
+// Image Count Badge
 class ImageCountBadge extends StatelessWidget {
   final int count;
 
@@ -111,8 +152,22 @@ class ImageCountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fontSize = ResponsiveUtils.fontSize(context, 12);
+    final paddingH = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 10,
+      tablet: 14,
+      desktop: 18,
+    );
+    final paddingV = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 5,
+      tablet: 8,
+      desktop: 10,
+    );
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV),
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
@@ -121,7 +176,7 @@ class ImageCountBadge extends StatelessWidget {
         '$count ${count > 1 ? 'images' : 'image'}',
         style: TextStyle(
           color: AppColors.primary,
-          fontSize: 12,
+          fontSize: fontSize,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -129,6 +184,7 @@ class ImageCountBadge extends StatelessWidget {
   }
 }
 
+// ================= Image Source Bottom Sheet =================
 class ImageSourceBottomSheet extends StatelessWidget {
   final VoidCallback onGalleryTap;
   final VoidCallback onCameraTap;
@@ -141,19 +197,38 @@ class ImageSourceBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final padding = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 16,
+      tablet: 24,
+      desktop: 32,
+    );
+    final indicatorWidth = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 40,
+      tablet: 60,
+      desktop: 80,
+    );
+    final indicatorHeight = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 4,
+      tablet: 5,
+      desktop: 6,
+    );
+
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
+              width: indicatorWidth,
+              height: indicatorHeight,
+              margin: EdgeInsets.only(bottom: padding),
               decoration: BoxDecoration(
                 color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(indicatorHeight / 2),
               ),
             ),
             ListTile(

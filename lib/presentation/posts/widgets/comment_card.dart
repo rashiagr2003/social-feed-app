@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../models/comment_model.dart';
+import '../../../utils/responsive_utils.dart';
 
 class CommentCard extends StatelessWidget {
   final CommentModel comment;
@@ -27,8 +28,14 @@ class CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double avatarRadius = ResponsiveUtils.fontSize(context, 18);
+    final double spacing = ResponsiveUtils.fontSize(context, 12);
+    final double usernameFont = ResponsiveUtils.fontSize(context, 14);
+    final double contentFont = ResponsiveUtils.fontSize(context, 14);
+    final double dateFont = ResponsiveUtils.fontSize(context, 12);
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(ResponsiveUtils.fontSize(context, 12)),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
@@ -36,16 +43,16 @@ class CommentCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
+            radius: avatarRadius,
             backgroundImage: comment.userPhotoUrl.isNotEmpty
                 ? NetworkImage(comment.userPhotoUrl)
                 : null,
             backgroundColor: AppColors.border,
-            radius: 18,
             child: comment.userPhotoUrl.isEmpty
-                ? const Icon(Icons.person, size: 18)
+                ? Icon(Icons.person, size: avatarRadius)
                 : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: spacing),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,25 +61,25 @@ class CommentCard extends StatelessWidget {
                   children: [
                     Text(
                       comment.username,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: usernameFont,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: ResponsiveUtils.fontSize(context, 8)),
                     Text(
                       _formatDate(comment.createdAt),
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 12,
+                        fontSize: dateFont,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: ResponsiveUtils.fontSize(context, 4)),
                 Text(
                   comment.content,
-                  style: const TextStyle(fontSize: 14, height: 1.4),
+                  style: TextStyle(fontSize: contentFont, height: 1.4),
                 ),
               ],
             ),

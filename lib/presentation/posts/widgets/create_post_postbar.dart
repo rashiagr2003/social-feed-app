@@ -3,6 +3,9 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'dart:io';
 import '../../../constants/app_colors.dart';
 
+import '../../../utils/responsive_utils.dart';
+
+// ===================== CreatePostAppBar =====================
 class CreatePostAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isPosting;
   final bool hasContent;
@@ -20,32 +23,39 @@ class CreatePostAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('Create Post'),
+      title: Text(
+        'Create Post',
+        style: TextStyle(fontSize: ResponsiveUtils.fontSize(context, 18)),
+      ),
       backgroundColor: Colors.white,
       elevation: 0.5,
       leading: IconButton(
-        icon: const Icon(Icons.close, color: Colors.black),
+        icon: Icon(
+          Icons.close,
+          color: Colors.black,
+          size: ResponsiveUtils.fontSize(context, 24),
+        ),
         onPressed: isPosting ? null : onClose,
       ),
       actions: [
         TextButton(
           onPressed: isPosting ? null : onPost,
           child: isPosting
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              ? SizedBox(
+                  width: ResponsiveUtils.fontSize(context, 20),
+                  height: ResponsiveUtils.fontSize(context, 20),
+                  child: const CircularProgressIndicator(strokeWidth: 2),
                 )
               : Text(
                   'Post',
                   style: TextStyle(
                     color: hasContent ? AppColors.primary : Colors.grey,
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: ResponsiveUtils.fontSize(context, 8)),
       ],
     );
   }
@@ -54,7 +64,7 @@ class CreatePostAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-// Post Input Section Widget
+// ===================== PostInputSection =====================
 class PostInputSection extends StatelessWidget {
   final dynamic user;
   final TextEditingController controller;
@@ -74,44 +84,50 @@ class PostInputSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: ResponsiveUtils.responsivePadding(context),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 20,
+            radius: ResponsiveUtils.fontSize(context, 20),
             backgroundImage:
                 user?.photoUrl != null && user!.photoUrl!.isNotEmpty
                 ? NetworkImage(user.photoUrl!)
                 : null,
             backgroundColor: AppColors.border,
             child: user?.photoUrl == null || user.photoUrl!.isEmpty
-                ? Icon(Icons.person, size: 20, color: Colors.grey.shade600)
+                ? Icon(
+                    Icons.person,
+                    size: ResponsiveUtils.fontSize(context, 20),
+                    color: Colors.grey.shade600,
+                  )
                 : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: ResponsiveUtils.fontSize(context, 12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   user?.name ?? 'User',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: ResponsiveUtils.fontSize(context, 14),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: ResponsiveUtils.fontSize(context, 8)),
                 TextField(
                   controller: controller,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "What's on your mind?",
                     border: InputBorder.none,
                   ),
                   maxLines: null,
                   minLines: 3,
                   autofocus: true,
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.fontSize(context, 16),
+                  ),
                   onTap: onTap,
                   onChanged: onChanged,
                 ),
@@ -124,7 +140,7 @@ class PostInputSection extends StatelessWidget {
   }
 }
 
-// Image Preview Section Widget
+// ===================== ImagePreviewSection =====================
 class ImagePreviewSection extends StatelessWidget {
   final List<File> images;
   final Function(int) onRemove;
@@ -138,8 +154,10 @@ class ImagePreviewSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: images.length == 1 ? 300 : 200,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: images.length == 1
+          ? ResponsiveUtils.screenHeight(context) * 0.35
+          : ResponsiveUtils.screenHeight(context) * 0.25,
+      padding: ResponsiveUtils.horizontalPadding(context),
       child: images.length == 1
           ? SingleImagePreview(image: images[0], onRemove: () => onRemove(0))
           : MultipleImagesPreview(images: images, onRemove: onRemove),
@@ -147,7 +165,7 @@ class ImagePreviewSection extends StatelessWidget {
   }
 }
 
-// Single Image Preview Widget
+// ===================== SingleImagePreview =====================
 class SingleImagePreview extends StatelessWidget {
   final File image;
   final VoidCallback onRemove;
@@ -165,18 +183,24 @@ class SingleImagePreview extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(
+              ResponsiveUtils.fontSize(context, 12),
+            ),
             border: Border.all(color: Colors.grey.shade300),
             image: DecorationImage(image: FileImage(image), fit: BoxFit.cover),
           ),
         ),
-        Positioned(top: 8, right: 8, child: RemoveImageButton(onTap: onRemove)),
+        Positioned(
+          top: ResponsiveUtils.fontSize(context, 8),
+          right: ResponsiveUtils.fontSize(context, 8),
+          child: RemoveImageButton(onTap: onRemove),
+        ),
       ],
     );
   }
 }
 
-// Multiple Images Preview Widget
+// ===================== MultipleImagesPreview =====================
 class MultipleImagesPreview extends StatelessWidget {
   final List<File> images;
   final Function(int) onRemove;
@@ -196,10 +220,14 @@ class MultipleImagesPreview extends StatelessWidget {
         return Stack(
           children: [
             Container(
-              margin: const EdgeInsets.only(right: 8),
-              width: 150,
+              margin: EdgeInsets.only(
+                right: ResponsiveUtils.fontSize(context, 8),
+              ),
+              width: ResponsiveUtils.screenWidth(context) * 0.4,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveUtils.fontSize(context, 12),
+                ),
                 border: Border.all(color: Colors.grey.shade300),
                 image: DecorationImage(
                   image: FileImage(images[index]),
@@ -208,12 +236,12 @@ class MultipleImagesPreview extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: 8,
-              right: 16,
+              top: ResponsiveUtils.fontSize(context, 8),
+              right: ResponsiveUtils.fontSize(context, 16),
               child: RemoveImageButton(
                 onTap: () => onRemove(index),
-                size: 18,
-                padding: 4,
+                size: ResponsiveUtils.fontSize(context, 18),
+                padding: ResponsiveUtils.fontSize(context, 4),
               ),
             ),
           ],
@@ -223,7 +251,7 @@ class MultipleImagesPreview extends StatelessWidget {
   }
 }
 
-// Remove Image Button Widget
+// ===================== RemoveImageButton =====================
 class RemoveImageButton extends StatelessWidget {
   final VoidCallback onTap;
   final double size;
@@ -247,66 +275,6 @@ class RemoveImageButton extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Icon(Icons.close, color: Colors.white, size: size),
-      ),
-    );
-  }
-}
-
-// Post Actions Bar Widget
-class PostActionsBar extends StatelessWidget {
-  final bool isPosting;
-  final int selectedImagesCount;
-  final bool showEmojiPicker;
-  final VoidCallback onImageTap;
-  final VoidCallback onEmojiTap;
-
-  const PostActionsBar({
-    super.key,
-    required this.isPosting,
-    required this.selectedImagesCount,
-    required this.showEmojiPicker,
-    required this.onImageTap,
-    required this.onEmojiTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: isPosting ? null : onImageTap,
-            icon: Icon(
-              Icons.image_outlined,
-              color: isPosting ? Colors.grey : AppColors.primary,
-              size: 28,
-            ),
-            tooltip: 'Add Image',
-          ),
-          if (selectedImagesCount > 0)
-            ImageCountBadge(count: selectedImagesCount),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: isPosting ? null : onEmojiTap,
-            icon: Icon(
-              showEmojiPicker ? Icons.keyboard : Icons.emoji_emotions_outlined,
-              color: isPosting ? Colors.grey : AppColors.primary,
-              size: 28,
-            ),
-            tooltip: 'Add Emoji',
-          ),
-        ],
       ),
     );
   }

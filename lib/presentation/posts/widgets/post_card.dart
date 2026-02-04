@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../constants/app_colors.dart';
 import '../../../models/post_model.dart';
+import '../../../utils/responsive_utils.dart';
 
 class PostCard extends StatelessWidget {
   final PostModel post;
@@ -74,12 +75,19 @@ class PostHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 12,
+      tablet: 16,
+      desktop: 20,
+    );
+
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(spacing),
       child: Row(
         children: [
           UserAvatar(photoUrl: post.userPhotoUrl),
-          const SizedBox(width: 12),
+          SizedBox(width: spacing),
           Expanded(
             child: UserInfo(
               username: post.username,
@@ -95,12 +103,18 @@ class PostHeader extends StatelessWidget {
 
 class UserAvatar extends StatelessWidget {
   final String photoUrl;
-  final double radius;
 
-  const UserAvatar({super.key, required this.photoUrl, this.radius = 20});
+  const UserAvatar({super.key, required this.photoUrl});
 
   @override
   Widget build(BuildContext context) {
+    final radius = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 20,
+      tablet: 28,
+      desktop: 32,
+    );
+
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.border,
@@ -109,7 +123,6 @@ class UserAvatar extends StatelessWidget {
           photoUrl,
           width: radius * 2,
           height: radius * 2,
-          fit: BoxFit.cover,
         ),
       ),
     );
@@ -165,18 +178,156 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fontSizeUsername = ResponsiveUtils.fontSize(context, 15);
+    final fontSizeDate = ResponsiveUtils.fontSize(context, 13);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           username,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: fontSizeUsername,
+          ),
         ),
         Text(
           formattedDate,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: fontSizeDate,
+          ),
         ),
       ],
+    );
+  }
+}
+
+// ================= Post Content =================
+class PostContent extends StatelessWidget {
+  final String content;
+
+  const PostContent({super.key, required this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 12,
+      tablet: 16,
+      desktop: 20,
+    );
+    final fontSize = ResponsiveUtils.fontSize(context, 15);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: padding,
+        vertical: padding / 1.5,
+      ),
+      child: Text(content, style: TextStyle(fontSize: fontSize, height: 1.4)),
+    );
+  }
+}
+
+// ================= Post Actions =================
+class PostActions extends StatelessWidget {
+  final PostModel post;
+  final bool isLiked;
+  final VoidCallback onLike;
+  final VoidCallback onComment;
+  final VoidCallback onShare;
+
+  const PostActions({
+    super.key,
+    required this.post,
+    required this.isLiked,
+    required this.onLike,
+    required this.onComment,
+    required this.onShare,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final spacing = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 32,
+      tablet: 40,
+      desktop: 48,
+    );
+
+    return Padding(
+      padding: EdgeInsets.all(
+        ResponsiveUtils.responsiveValue<double>(
+          context,
+          mobile: 12,
+          tablet: 16,
+          desktop: 20,
+        ),
+      ),
+      child: Row(
+        children: [
+          PostActionButton(
+            icon: isLiked ? Icons.favorite : Icons.favorite_border,
+            color: isLiked ? AppColors.like : AppColors.textSecondary,
+            label: post.likeCount.toString(),
+            onTap: onLike,
+          ),
+          SizedBox(width: spacing),
+          PostActionButton(
+            icon: Icons.chat_bubble_outline,
+            color: AppColors.textSecondary,
+            label: post.commentCount.toString(),
+            onTap: onComment,
+          ),
+          SizedBox(width: spacing),
+          PostActionButton(
+            icon: Icons.share_outlined,
+            color: AppColors.textSecondary,
+            label: post.shareCount.toString(),
+            onTap: onShare,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PostActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final VoidCallback onTap;
+
+  const PostActionButton({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final iconSize = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 22,
+      tablet: 28,
+      desktop: 32,
+    );
+    final fontSize = ResponsiveUtils.fontSize(context, 14);
+
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: iconSize),
+          SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(color: color, fontSize: fontSize),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -193,22 +344,6 @@ class PostOptionsButton extends StatelessWidget {
   }
 }
 
-// ================= Post Content =================
-class PostContent extends StatelessWidget {
-  final String content;
-
-  const PostContent({super.key, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Text(content, style: const TextStyle(fontSize: 15, height: 1.4)),
-    );
-  }
-}
-
-// ================= Post Images =================
 class PostImageGallery extends StatelessWidget {
   final List<String> imageUrls;
 
@@ -302,83 +437,5 @@ class PostImageItem extends StatelessWidget {
     }
 
     return Image.file(file, width: width, height: height, fit: fit);
-  }
-}
-
-// ================= Post Actions =================
-class PostActions extends StatelessWidget {
-  final PostModel post;
-  final bool isLiked;
-  final VoidCallback onLike;
-  final VoidCallback onComment;
-  final VoidCallback onShare;
-
-  const PostActions({
-    super.key,
-    required this.post,
-    required this.isLiked,
-    required this.onLike,
-    required this.onComment,
-    required this.onShare,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          PostActionButton(
-            icon: isLiked ? Icons.favorite : Icons.favorite_border,
-            color: isLiked ? AppColors.like : AppColors.textSecondary,
-            label: post.likeCount.toString(),
-            onTap: onLike,
-          ),
-          const SizedBox(width: 32),
-          PostActionButton(
-            icon: Icons.chat_bubble_outline,
-            color: AppColors.textSecondary,
-            label: post.commentCount.toString(),
-            onTap: onComment,
-          ),
-          const SizedBox(width: 32),
-          PostActionButton(
-            icon: Icons.share_outlined,
-            color: AppColors.textSecondary,
-            label: post.shareCount.toString(),
-            onTap: onShare,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PostActionButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String label;
-  final VoidCallback onTap;
-
-  const PostActionButton({
-    super.key,
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(width: 4),
-          Text(label, style: TextStyle(color: color, fontSize: 14)),
-        ],
-      ),
-    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../constants/app_colors.dart';
 import '../../../controllers/post_controller.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../utils/responsive_utils.dart';
 import '../widgets/post_card.dart';
 import 'comment_screen.dart';
 
@@ -103,30 +104,38 @@ class FeedLoadingIndicator extends StatelessWidget {
   }
 }
 
-// Feed Empty View Widget
 class FeedEmptyView extends StatelessWidget {
   const FeedEmptyView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 60.0,
+      tablet: 80.0,
+      desktop: 100.0,
+    );
+    final fontTitle = ResponsiveUtils.fontSize(context, 18);
+    final fontSubtitle = ResponsiveUtils.fontSize(context, 14);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.post_add, size: 80, color: AppColors.textHint),
-          const SizedBox(height: 16),
+          Icon(Icons.post_add, size: iconSize, color: AppColors.textHint),
+          SizedBox(height: 16),
           Text(
             'No posts yet',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: fontTitle,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Be the first to create a post!',
-            style: TextStyle(fontSize: 14, color: AppColors.textHint),
+            style: TextStyle(fontSize: fontSubtitle, color: AppColors.textHint),
           ),
         ],
       ),
@@ -134,7 +143,6 @@ class FeedEmptyView extends StatelessWidget {
   }
 }
 
-// Feed Post List Widget
 class FeedPostList extends ConsumerWidget {
   final List posts;
   final dynamic currentUser;

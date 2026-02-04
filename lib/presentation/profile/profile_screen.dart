@@ -4,6 +4,7 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/post_controller.dart';
 import '../auth/screens/login_screen.dart';
 import 'widgets/profile_widgets.dart';
+import '../../utils/responsive_utils.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -20,7 +21,10 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: ProfileAppBar(userName: user.name),
-      body: ProfileBody(user: user, posts: posts),
+      body: Padding(
+        padding: ResponsiveUtils.horizontalPadding(context),
+        child: ProfileBody(user: user, posts: posts),
+      ),
     );
   }
 }
@@ -34,17 +38,26 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
-      title: Text(userName),
+      title: Text(
+        userName,
+        style: TextStyle(fontSize: ResponsiveUtils.fontSize(context, 20)),
+      ),
       backgroundColor: Colors.white,
       actions: [
-        const SettingsIconButton(),
+        SettingsIconButton(),
         LogoutIconButton(ref: ref),
       ],
+      toolbarHeight: ResponsiveUtils.responsiveValue<double>(
+        context,
+        mobile: kToolbarHeight,
+        tablet: kToolbarHeight * 1.2,
+        desktop: kToolbarHeight * 1.4,
+      ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
 // Settings Icon Button Widget
@@ -54,7 +67,15 @@ class SettingsIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.settings),
+      icon: Icon(
+        Icons.settings,
+        size: ResponsiveUtils.responsiveValue(
+          context,
+          mobile: 24,
+          tablet: 28,
+          desktop: 32,
+        ),
+      ),
       onPressed: () {
         ScaffoldMessenger.of(
           context,
@@ -73,7 +94,15 @@ class LogoutIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.logout),
+      icon: Icon(
+        Icons.logout,
+        size: ResponsiveUtils.responsiveValue(
+          context,
+          mobile: 24,
+          tablet: 28,
+          desktop: 32,
+        ),
+      ),
       onPressed: () async {
         await ref.read(authControllerProvider.notifier).signOut();
         if (context.mounted) {

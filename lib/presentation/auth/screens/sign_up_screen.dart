@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../utils/responsive_utils.dart';
 import '../../home/screens/main_screen.dart';
 import 'login_screen.dart';
 
@@ -39,12 +40,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               _nameController.text.trim(),
             );
 
-        // ✅ Wait for state to update
         final isAuth = ref.read(isAuthenticatedProvider);
         if (mounted && isAuth) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const MainScreen()),
-            (route) => false, // remove all previous routes
+            (route) => false,
           );
         }
       } on FirebaseAuthException catch (e) {
@@ -67,35 +67,59 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
+    // Responsive values
+    final padding = ResponsiveUtils.responsivePadding(context);
+    final iconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 80.0,
+      tablet: 100.0,
+      desktop: 120.0,
+    );
+    final fontLarge = ResponsiveUtils.fontSize(context, 28);
+    final fontMedium = ResponsiveUtils.fontSize(context, 16);
+    final buttonHeight = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 50.0,
+      tablet: 55.0,
+      desktop: 60.0,
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: null,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: padding,
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.person_add, size: 80, color: AppColors.primary),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Create Account',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  Icon(
+                    Icons.person_add,
+                    size: iconSize,
+                    color: AppColors.primary,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: padding.top / 2),
+                  Text(
+                    'Create Account',
+                    style: TextStyle(
+                      fontSize: fontLarge,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
                   Text(
                     'Join our community today',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: fontMedium,
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  // Name
+                  SizedBox(height: 40),
+
+                  // Name Field
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
@@ -105,12 +129,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) => value == null || value.isEmpty
+                    validator: (value) => (value == null || value.isEmpty)
                         ? 'Please enter your name'
                         : null,
                   ),
-                  const SizedBox(height: 16),
-                  // Email
+                  SizedBox(height: 16),
+
+                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -121,12 +146,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) => value == null || value.isEmpty
+                    validator: (value) => (value == null || value.isEmpty)
                         ? 'Please enter email'
                         : null,
                   ),
-                  const SizedBox(height: 16),
-                  // Password
+                  SizedBox(height: 16),
+
+                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -145,19 +171,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       return null;
                     },
                   ),
-                  // Error
+
+                  // Error Message
                   if (authState.error != null) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       authState.error!,
                       style: const TextStyle(color: AppColors.error),
                     ),
                   ],
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
+
                   // Sign Up Button
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: buttonHeight,
                     child: ElevatedButton(
                       onPressed: authState.isLoading ? null : _signUp,
                       style: ElevatedButton.styleFrom(
@@ -169,26 +197,30 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ),
                       child: authState.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          : Text(
                               'Sign Up',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: fontMedium),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Google Sign-In Button
+                  SizedBox(height: 16),
+
+                  // Google Sign-Up Button
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: buttonHeight,
                     child: OutlinedButton.icon(
                       icon: Image.network(
                         'https://dospace.org/wp-content/uploads/2018/01/Google_logo.jpg',
                         height: 24,
                         width: 24,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Sign up with Google',
-                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                        style: TextStyle(
+                          fontSize: fontMedium,
+                          color: Colors.black87,
+                        ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.grey),
@@ -203,7 +235,6 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                               await ref
                                   .read(authControllerProvider.notifier)
                                   .signInWithGoogle();
-
                               final isAuth = ref.read(isAuthenticatedProvider);
                               if (mounted && isAuth) {
                                 Navigator.of(context).pushAndRemoveUntil(
@@ -216,11 +247,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             },
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
+
+                  // Login Redirect
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account?'),
+                      Text(
+                        'Already have an account?',
+                        style: TextStyle(fontSize: fontMedium),
+                      ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).push(
@@ -229,7 +265,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                             ),
                           );
                         },
-                        child: const Text('Login'),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: fontMedium),
+                        ),
                       ),
                     ],
                   ),

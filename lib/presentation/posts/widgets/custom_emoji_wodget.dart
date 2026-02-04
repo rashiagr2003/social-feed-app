@@ -2,7 +2,9 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/app_colors.dart';
+import '../../../utils/responsive_utils.dart';
 
+// ================= Custom Emoji Picker =================
 class CustomEmojiPicker extends StatelessWidget {
   final Function(Category?, Emoji) onEmojiSelected;
 
@@ -10,15 +12,28 @@ class CustomEmojiPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 250,
+      tablet: 300,
+      desktop: 350,
+    );
+    final emojiSize = ResponsiveUtils.responsiveValue<double>(
+      context,
+      mobile: 32,
+      tablet: 36,
+      desktop: 40,
+    );
+
     return SizedBox(
-      height: 250,
+      height: height,
       child: EmojiPicker(
         onEmojiSelected: onEmojiSelected,
         config: Config(
           checkPlatformCompatibility: true,
           emojiViewConfig: EmojiViewConfig(
             columns: 7,
-            emojiSizeMax: 32,
+            emojiSizeMax: emojiSize,
             verticalSpacing: 0,
             horizontalSpacing: 0,
             gridPadding: EdgeInsets.zero,

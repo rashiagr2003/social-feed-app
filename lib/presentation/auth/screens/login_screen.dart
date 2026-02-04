@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../constants/app_colors.dart';
 import '../../../../controllers/auth_controller.dart';
+import '../../../utils/responsive_utils.dart';
 import '../../home/screens/main_screen.dart';
 import 'sign_up_screen.dart';
 
@@ -41,12 +42,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
 
+    final padding = ResponsiveUtils.responsivePadding(context);
+    final iconSize = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 80.0,
+      tablet: 100.0,
+      desktop: 120.0,
+    );
+    final fontLarge = ResponsiveUtils.fontSize(context, 28);
+    final fontMedium = ResponsiveUtils.fontSize(context, 16);
+    final buttonHeight = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 50.0,
+      tablet: 55.0,
+      desktop: 60.0,
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: padding,
             child: Form(
               key: _formKey,
               child: Column(
@@ -54,23 +71,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   Icon(
                     Icons.connect_without_contact,
-                    size: 80,
+                    size: iconSize,
                     color: AppColors.primary,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: padding.top / 2),
+                  Text(
                     'Welcome Back!',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: fontLarge,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Sign in to continue',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: fontMedium,
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -81,13 +101,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty)
-                        return 'Please enter email';
-                      return null;
-                    },
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Please enter email'
+                        : null,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -98,23 +116,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty)
-                        return 'Please enter password';
-                      return null;
-                    },
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Please enter password'
+                        : null,
                   ),
                   if (authState.error != null) ...[
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       authState.error!,
                       style: const TextStyle(color: AppColors.error),
                     ),
                   ],
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: buttonHeight,
                     child: ElevatedButton(
                       onPressed: authState.isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
@@ -126,13 +142,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       child: authState.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          : Text(
                               'Sign In',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: fontMedium),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -152,12 +168,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  Divider(),
-                  SizedBox(height: 32),
+                  Divider(height: 32),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: buttonHeight,
                     child: OutlinedButton.icon(
                       onPressed: authState.isLoading
                           ? null
@@ -165,7 +179,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               await ref
                                   .read(authControllerProvider.notifier)
                                   .signInWithGoogle();
-
                               if (mounted &&
                                   ref.read(isAuthenticatedProvider)) {
                                 Navigator.of(context).pushReplacement(
@@ -179,9 +192,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         'https://dospace.org/wp-content/uploads/2018/01/Google_logo.jpg',
                         height: 22,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Sign in with Google',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: fontMedium),
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.black,

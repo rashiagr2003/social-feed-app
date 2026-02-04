@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_colors.dart';
 import '../../../controllers/post_controller.dart';
+import '../../../utils/responsive_utils.dart';
 import '../../posts/screens/comment_screen.dart';
 import '../../posts/widgets/post_card.dart';
 
@@ -27,7 +28,6 @@ class ProfileBody extends StatelessWidget {
   }
 }
 
-// Profile Header Widget
 class ProfileHeader extends StatelessWidget {
   final dynamic user;
   final int postsCount;
@@ -42,14 +42,16 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.all(20),
+      padding: ResponsiveUtils.responsivePadding(context), // responsive padding
       child: Column(
         children: [
           ProfileAvatar(user: user),
-          const SizedBox(height: 16),
+          SizedBox(
+            height: ResponsiveUtils.fontSize(context, 16),
+          ), // responsive spacing
           ProfileUserInfo(user: user),
           if (user.bio != null) ProfileBio(bio: user.bio!),
-          const SizedBox(height: 20),
+          SizedBox(height: ResponsiveUtils.fontSize(context, 20)),
           ProfileStats(
             postsCount: postsCount,
             followersCount: user.followerCount,
@@ -61,7 +63,6 @@ class ProfileHeader extends StatelessWidget {
   }
 }
 
-// Profile Avatar Widget
 class ProfileAvatar extends StatelessWidget {
   final dynamic user;
 
@@ -69,18 +70,24 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double radius = ResponsiveUtils.responsiveValue(
+      context,
+      mobile: 50,
+      tablet: 60,
+      desktop: 70,
+    );
+
     return CircleAvatar(
-      radius: 50,
+      radius: radius,
       backgroundImage: user.photoUrl != null
           ? NetworkImage(user.photoUrl!)
           : null,
       backgroundColor: AppColors.border,
-      child: user.photoUrl == null ? const Icon(Icons.person, size: 50) : null,
+      child: user.photoUrl == null ? Icon(Icons.person, size: radius) : null,
     );
   }
 }
 
-// Profile User Info Widget
 class ProfileUserInfo extends StatelessWidget {
   final dynamic user;
 
@@ -92,19 +99,24 @@ class ProfileUserInfo extends StatelessWidget {
       children: [
         Text(
           user.name,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.fontSize(context, 24),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: ResponsiveUtils.fontSize(context, 4)),
         Text(
           user.username,
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.fontSize(context, 16),
+            color: AppColors.textSecondary,
+          ),
         ),
       ],
     );
   }
 }
 
-// Profile Bio Widget
 class ProfileBio extends StatelessWidget {
   final String bio;
 
@@ -114,18 +126,17 @@ class ProfileBio extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 12),
+        SizedBox(height: ResponsiveUtils.fontSize(context, 12)),
         Text(
           bio,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: ResponsiveUtils.fontSize(context, 14)),
         ),
       ],
     );
   }
 }
 
-// Profile Stats Widget
 class ProfileStats extends StatelessWidget {
   final int postsCount;
   final int followersCount;
@@ -151,7 +162,6 @@ class ProfileStats extends StatelessWidget {
   }
 }
 
-// Profile Stat Column Widget
 class ProfileStatColumn extends StatelessWidget {
   final String label;
   final String value;
@@ -168,19 +178,24 @@ class ProfileStatColumn extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.fontSize(context, 20),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: ResponsiveUtils.fontSize(context, 4)),
         Text(
           label,
-          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: ResponsiveUtils.fontSize(context, 14),
+            color: AppColors.textSecondary,
+          ),
         ),
       ],
     );
   }
 }
 
-// Profile Posts List Widget
 class ProfilePostsList extends ConsumerWidget {
   final dynamic user;
   final List posts;
@@ -221,22 +236,38 @@ class ProfilePostsList extends ConsumerWidget {
   }
 }
 
-// Profile Empty Posts Widget
 class ProfileEmptyPosts extends StatelessWidget {
   const ProfileEmptyPosts({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(40),
+      padding: ResponsiveUtils.responsivePadding(context), // responsive padding
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.post_add, size: 60, color: Colors.grey.shade300),
-            const SizedBox(height: 16),
+            Icon(
+              Icons.post_add,
+              size: ResponsiveUtils.responsiveValue(
+                context,
+                mobile: 60,
+                tablet: 80,
+                desktop: 100,
+              ),
+              color: Colors.grey.shade300,
+            ),
+            SizedBox(
+              height: ResponsiveUtils.fontSize(context, 16),
+            ), // responsive spacing
             Text(
               'No posts yet',
-              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+              style: TextStyle(
+                fontSize: ResponsiveUtils.fontSize(
+                  context,
+                  16,
+                ), // responsive font size
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
