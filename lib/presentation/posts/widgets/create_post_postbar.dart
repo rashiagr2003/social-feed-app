@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'dart:io';
 import '../../../constants/app_colors.dart';
-
 import '../../../utils/responsive_utils.dart';
 
 // ===================== CreatePostAppBar =====================
@@ -22,6 +21,8 @@ class CreatePostAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spinnerSize = ResponsiveUtils.fontSize(context, 20);
+
     return AppBar(
       title: Text(
         'Create Post',
@@ -42,9 +43,14 @@ class CreatePostAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: isPosting ? null : onPost,
           child: isPosting
               ? SizedBox(
-                  width: ResponsiveUtils.fontSize(context, 20),
-                  height: ResponsiveUtils.fontSize(context, 20),
-                  child: const CircularProgressIndicator(strokeWidth: 2),
+                  width: spinnerSize,
+                  height: spinnerSize,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
+                  ),
                 )
               : Text(
                   'Post',
@@ -118,7 +124,7 @@ class PostInputSection extends StatelessWidget {
                 SizedBox(height: ResponsiveUtils.fontSize(context, 8)),
                 TextField(
                   controller: controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "What's on your mind?",
                     border: InputBorder.none,
                   ),
@@ -280,7 +286,7 @@ class RemoveImageButton extends StatelessWidget {
   }
 }
 
-// Image Count Badge Widget
+// ===================== ImageCountBadge =====================
 class ImageCountBadge extends StatelessWidget {
   final int count;
 
@@ -306,7 +312,7 @@ class ImageCountBadge extends StatelessWidget {
   }
 }
 
-// Custom Emoji Picker Widget
+// ===================== CustomEmojiPicker =====================
 class CustomEmojiPicker extends StatelessWidget {
   final Function(Category?, Emoji) onEmojiSelected;
 
@@ -357,7 +363,7 @@ class CustomEmojiPicker extends StatelessWidget {
   }
 }
 
-// Image Source Bottom Sheet Widget
+// ===================== ImageSourceBottomSheet =====================
 class ImageSourceBottomSheet extends StatelessWidget {
   final VoidCallback onGalleryTap;
   final VoidCallback onCameraTap;
@@ -402,7 +408,7 @@ class ImageSourceBottomSheet extends StatelessWidget {
   }
 }
 
-// Discard Post Dialog Widget
+// ===================== DiscardPostDialog =====================
 class DiscardPostDialog extends StatelessWidget {
   final VoidCallback onDiscard;
 

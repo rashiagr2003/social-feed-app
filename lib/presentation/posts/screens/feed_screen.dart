@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:social_feed_app/constants/feed_skeleton_loader.dart';
 import '../../../constants/app_colors.dart';
 import '../../../controllers/post_controller.dart';
 import '../../../controllers/auth_controller.dart';
@@ -100,7 +101,7 @@ class FeedLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: CircularProgressIndicator(color: AppColors.primary));
+    return Center(child: FeedSkeletonLoader());
   }
 }
 
