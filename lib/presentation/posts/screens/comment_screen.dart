@@ -7,6 +7,167 @@ import '../../../models/comment_model.dart';
 import '../../../controllers/auth_controller.dart';
 import '../widgets/comment_card.dart';
 
+// ============================================================
+// COMMENTS SKELETON LOADER
+// ============================================================
+
+class _CommentSkeletonItem extends StatelessWidget {
+  const _CommentSkeletonItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Avatar circle
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE0E0E0),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Username line
+                Container(
+                  width: 110,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 7),
+                // Comment text — full line
+                Container(
+                  width: double.infinity,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                // Comment text — partial second line
+                Container(
+                  width: 180,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0E0E0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 7),
+                // Timestamp + like action row
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E0E0),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Container(
+                      width: 30,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E0E0),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CommentsSkeletonLoader extends StatefulWidget {
+  final int itemCount;
+
+  const CommentsSkeletonLoader({super.key, this.itemCount = 6});
+
+  @override
+  State<CommentsSkeletonLoader> createState() => _CommentsSkeletonLoaderState();
+}
+
+class _CommentsSkeletonLoaderState extends State<CommentsSkeletonLoader>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            return LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: const [
+                Color(0xFFEBEBF4),
+                Color(0xFFF4F4F4),
+                Color(0xFFEBEBF4),
+              ],
+              stops: [
+                _animation.value - 0.3,
+                _animation.value,
+                _animation.value + 0.3,
+              ],
+            ).createShader(bounds);
+          },
+          child: ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.itemCount,
+            separatorBuilder: (_, __) =>
+                const Divider(height: 1, indent: 62, color: Color(0xFFF0F0F0)),
+            itemBuilder: (_, __) => const _CommentSkeletonItem(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ============================================================
+// COMMENTS SCREEN
+// ============================================================
+
 /// Comments screen for a post
 class CommentsScreen extends ConsumerStatefulWidget {
   final PostModel post;
@@ -66,7 +227,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
       ),
       body: Column(
         children: [
-          // Post preview
+          // ── Post preview ─────────────────────────────────
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -77,8 +238,13 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(widget.post.userPhotoUrl),
+                  backgroundImage: widget.post.userPhotoUrl.isNotEmpty
+                      ? NetworkImage(widget.post.userPhotoUrl)
+                      : null,
                   backgroundColor: AppColors.border,
+                  child: widget.post.userPhotoUrl.isEmpty
+                      ? const Icon(Icons.person, size: 20)
+                      : null,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -106,10 +272,10 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
             ),
           ),
 
-          // Comments list
+          // ── Comments list ─────────────────────────────────
           Expanded(
             child: commentState.isLoading
-                ? const Center(child: commentsk)
+                ? const CommentsSkeletonLoader()
                 : commentState.comments.isEmpty
                 ? Center(
                     child: Column(
@@ -143,7 +309,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
                   ),
           ),
 
-          // Comment input
+          // ── Comment input ─────────────────────────────────
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -154,12 +320,16 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
               child: Row(
                 children: [
                   CircleAvatar(
-                    backgroundImage: currentUser?.photoUrl != null
-                        ? NetworkImage(currentUser!.photoUrl!)
+                    backgroundImage:
+                        currentUser?.photoUrl != null &&
+                            currentUser!.photoUrl!.isNotEmpty
+                        ? NetworkImage(currentUser.photoUrl!)
                         : null,
                     backgroundColor: AppColors.border,
                     radius: 18,
-                    child: currentUser?.photoUrl == null
+                    child:
+                        currentUser?.photoUrl == null ||
+                            currentUser!.photoUrl!.isEmpty
                         ? const Icon(Icons.person, size: 20)
                         : null,
                   ),
