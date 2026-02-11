@@ -109,7 +109,7 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
           // Comments list
           Expanded(
             child: commentState.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: commentsk)
                 : commentState.comments.isEmpty
                 ? Center(
                     child: Column(
